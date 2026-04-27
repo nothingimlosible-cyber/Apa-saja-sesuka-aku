@@ -3,91 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HYPESTORE - Exclusive Catalog</title>
-    <!-- CDN untuk Desain & Ikon (Pastikan Internet Aktif) -->
+    <title>HYPESTORE - Katalog Affiliate</title>
+    <!-- Script WAJIB: Tanpa ini tampilan akan pecah (polos) -->
     <script src="https://tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cloudflare.com">
     <style>
         @import url('https://googleapis.com');
-        * { font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.3s ease; scroll-behavior: smooth; }
+        * { font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.3s ease; }
         body { background-color: #f8fafc; }
-        .nav-glass { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
         .hero-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
         .admin-only { display: none !important; }
         .is-admin .admin-only { display: block !important; }
-        .card-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
     </style>
 </head>
-<body class="pb-32" onload="load()">
+<body class="pb-20" onload="load()">
 
     <!-- Navbar -->
-    <nav class="fixed top-0 w-full z-[100] nav-glass px-6 py-4">
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b px-6 py-4">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-black italic text-slate-900 tracking-tighter">HYPE<span class="text-indigo-600">STORE.</span></h1>
-            <div class="flex gap-3">
-                <button onclick="toggleLogin()" class="text-slate-400 p-2 hover:text-indigo-600"><i class="fas fa-fingerprint text-2xl"></i></button>
-            </div>
+            <h1 class="text-xl font-black italic text-slate-900">HYPE<span class="text-indigo-600">STORE.</span></h1>
+            <button onclick="toggleLogin()" class="text-slate-300 hover:text-indigo-600"><i class="fas fa-fingerprint text-2xl"></i></button>
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="mt-28 px-6">
-        <div class="max-w-7xl mx-auto hero-gradient rounded-[2.5rem] p-10 md:p-16 relative overflow-hidden shadow-2xl">
-            <div class="relative z-10 text-left">
-                <span class="bg-indigo-500/20 text-indigo-300 text-[10px] font-black px-4 py-1.5 rounded-full uppercase italic border border-indigo-500/30">Official Affiliate</span>
-                <h2 class="text-4xl md:text-6xl font-black text-white mt-6 leading-[1.1] uppercase italic tracking-tighter">Style Baru <br>Setiap Hari.</h2>
-                <div class="mt-10">
-                    <a href="#katalog" class="inline-block bg-indigo-600 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase shadow-lg hover:bg-indigo-700">Lihat Koleksi</a>
-                </div>
+    <!-- Hero -->
+    <section class="mt-24 px-4">
+        <div class="max-w-7xl mx-auto hero-gradient rounded-[2.5rem] p-8 md:p-16 relative overflow-hidden shadow-xl">
+            <div class="relative z-10">
+                <span class="bg-indigo-500/20 text-indigo-300 text-[9px] font-black px-3 py-1 rounded-full uppercase italic border border-indigo-500/30">Official Katalog</span>
+                <h2 class="text-4xl md:text-6xl font-black text-white mt-4 leading-tight uppercase italic">Style Baru <br>Mulai Disini.</h2>
+                <a href="#katalog" class="inline-block bg-indigo-600 text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase mt-8 shadow-lg">Eksplorasi</a>
             </div>
-            <!-- Dekorasi Lingkaran -->
-            <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-indigo-600/20 rounded-full blur-[100px]"></div>
         </div>
     </section>
 
-    <!-- Modal Login -->
-    <div id="loginBox" class="hidden fixed inset-0 z-[200] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6 text-center">
-        <div class="bg-white p-10 rounded-[3rem] shadow-2xl w-full max-w-xs">
-            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i class="fas fa-lock text-slate-400"></i>
-            </div>
-            <input type="password" id="passInput" placeholder="Passkey" class="w-full p-4 bg-slate-50 rounded-2xl mb-4 text-center font-bold outline-none border border-slate-100 focus:border-indigo-300">
-            <button onclick="login()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase text-[11px] tracking-widest shadow-xl">Authorize</button>
-            <button onclick="toggleLogin()" class="mt-4 text-slate-400 text-[10px] uppercase font-black hover:text-slate-600">Batal</button>
+    <!-- Login Modal -->
+    <div id="loginBox" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6">
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-xs text-center">
+            <h3 class="font-black mb-4">ADMIN ACCESS</h3>
+            <input type="password" id="passInput" placeholder="Passkey" class="w-full p-4 bg-slate-50 rounded-2xl mb-4 text-center font-bold outline-none border">
+            <button onclick="login()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase text-[10px]">Authorize</button>
+            <button onclick="toggleLogin()" class="mt-4 text-slate-400 text-[10px] uppercase font-bold">Batal</button>
         </div>
     </div>
 
-    <!-- Admin Panel (Hanya muncul jika login sukses) -->
-    <section id="adminDashboard" class="admin-only px-6 mt-10">
-        <div class="max-w-7xl mx-auto bg-white p-8 rounded-[3rem] border-2 border-dashed border-indigo-100 shadow-xl">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input type="text" id="pName" placeholder="Nama Produk" class="p-4 bg-slate-50 rounded-xl outline-none border border-slate-100 text-sm">
-                <input type="text" id="pPrice" placeholder="Harga (Contoh: Rp 120rb)" class="p-4 bg-slate-50 rounded-xl outline-none border border-slate-100 font-bold text-indigo-600 text-sm">
-                <input type="url" id="pLink" placeholder="Link Affiliate (https://...)" class="p-4 bg-slate-50 rounded-xl outline-none border border-slate-100 text-sm">
-                <input type="text" id="pSource" placeholder="Marketplace (SHOPEE / TIKTOK)" class="p-4 bg-slate-50 rounded-xl outline-none border border-slate-100 uppercase font-black text-xs tracking-widest">
-                <input type="file" id="pFile" class="md:col-span-2 p-4 bg-slate-50 rounded-xl text-[10px] font-bold">
+    <!-- Admin Panel -->
+    <section id="adminDashboard" class="admin-only px-4 mt-8">
+        <div class="max-w-7xl mx-auto bg-white p-6 rounded-[2.5rem] border-2 border-dashed border-indigo-100 shadow-md">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input type="text" id="pName" placeholder="Nama Produk" class="p-4 bg-slate-50 rounded-xl outline-none border text-sm">
+                <input type="text" id="pPrice" placeholder="Harga (Contoh: Rp 125rb)" class="p-4 bg-slate-50 rounded-xl outline-none border text-sm font-bold text-indigo-600">
+                <input type="url" id="pLink" placeholder="Link Affiliate Shopee/TikTok" class="p-4 bg-slate-50 rounded-xl outline-none border text-sm">
+                <input type="text" id="pSource" placeholder="SHOPEE / TIKTOK" class="p-4 bg-slate-50 rounded-xl outline-none border uppercase font-black text-[10px]">
+                <input type="file" id="pFile" class="md:col-span-2 p-4 bg-slate-50 rounded-xl text-[10px]">
             </div>
-            <div class="flex gap-4 mt-6">
-                <button onclick="saveProduct()" id="btnSave" class="flex-grow bg-indigo-600 text-white py-5 rounded-2xl font-black uppercase text-[11px] shadow-lg tracking-widest">Publish ke Katalog</button>
-                <button onclick="toggleDeleteMode()" class="bg-slate-800 text-white px-8 rounded-2xl shadow-lg hover:bg-red-600"><i class="fas fa-trash"></i></button>
+            <div class="flex gap-3 mt-6">
+                <button onclick="saveProduct()" id="btnSave" class="flex-grow bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-[11px]">Publish</button>
+                <button onclick="toggleDeleteMode()" class="bg-slate-800 text-white px-6 rounded-2xl"><i class="fas fa-trash"></i></button>
             </div>
         </div>
     </section>
 
     <!-- Katalog -->
-    <section id="katalog" class="px-6 py-16">
+    <section id="katalog" class="px-4 py-12">
         <div class="max-w-7xl mx-auto">
-            <h3 class="text-3xl font-black text-slate-900 uppercase italic mb-10 tracking-tighter">Catalogue <span class="text-indigo-600">List.</span></h3>
-            <div id="grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-                <!-- Loading State -->
-                <p class="col-span-full text-center text-slate-400 py-20 italic">Memuat katalog...</p>
+            <h3 class="text-2xl font-black text-slate-900 uppercase italic mb-8 border-l-4 border-indigo-600 pl-4">Catalogue.</h3>
+            <div id="grid" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <p class="col-span-full text-center text-slate-400 py-10 italic">Memuat data...</p>
             </div>
         </div>
     </section>
 
     <script>
         let isDeleteActive = false;
-
         function toggleLogin() { document.getElementById('loginBox').classList.toggle('hidden'); }
         function toggleDeleteMode() { isDeleteActive = !isDeleteActive; load(); }
 
@@ -102,10 +90,8 @@
             if(result.success) { 
                 document.body.classList.add('is-admin'); 
                 toggleLogin(); 
-                alert("Akses Admin Diterima!");
-            } else { 
-                alert("Passkey Salah!"); 
-            }
+                alert("Akses Admin Aktif!");
+            } else { alert("Passkey Salah!"); }
         }
 
         async function load() {
@@ -113,40 +99,42 @@
                 const res = await fetch('/api/katalog');
                 const data = await res.json();
                 const grid = document.getElementById('grid');
-                if(data.length === 0) {
-                    grid.innerHTML = `<p class="col-span-full text-center text-slate-400">Belum ada produk.</p>`;
-                    return;
-                }
-                grid.innerHTML = data.reverse().map(p => `
-                    <div class="group bg-white rounded-[2.2rem] overflow-hidden border border-slate-100 p-2 card-shadow relative hover:-translate-y-2 transition-all duration-500">
-                        ${isDeleteActive ? `<button onclick="delDoc('${p.id}')" class="absolute top-4 right-4 bg-red-600 text-white w-8 h-8 rounded-full z-20 shadow-xl flex items-center justify-center font-bold">×</button>` : ''}
-                        <img src="${p.img}" class="aspect-[4/5] rounded-[1.8rem] object-cover mb-2">
+                grid.innerHTML = data.reverse().map(p => {
+                    // Logika "Anti-Undefined": Mencari kolom nama/nama/Harga/harga
+                    const n = p.nama || p.Nama || p.name || 'Produk';
+                    const h = p.harga || p.Harga || p.price || 'Cek Harga';
+                    const l = p.link || p.Link || p.url || '#';
+                    const s = p.source || p.Source || 'HypeStore';
+                    const i = p.img || p.Img || p.image || p.Image || '';
+
+                    return `
+                    <div class="bg-white rounded-[2rem] overflow-hidden border border-slate-100 p-2 shadow-sm relative">
+                        ${isDeleteActive ? `<button onclick="delDoc('${p.id}')" class="absolute top-4 right-4 bg-red-600 text-white w-8 h-8 rounded-full z-20 shadow-lg">×</button>` : ''}
+                        <img src="${i}" class="aspect-[4/5] rounded-[1.6rem] object-cover mb-2 bg-slate-100">
                         <div class="p-3 text-center">
-                            <span class="text-[9px] font-black uppercase text-indigo-500 tracking-[0.2em] mb-1 block">${p.source || 'Product'}</span>
-                            <h3 class="text-sm font-bold text-slate-800 line-clamp-1 mb-2">${p.nama}</h3>
-                            <p class="text-slate-900 font-black text-base mb-4">${p.harga}</p>
-                            <a href="${p.link}" target="_blank" class="block w-full bg-slate-900 text-white py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-[0.1em] hover:bg-indigo-600">Shop Now</a>
+                            <span class="text-[8px] font-black uppercase text-indigo-500 tracking-widest">${s}</span>
+                            <h3 class="text-[13px] font-bold text-slate-800 line-clamp-1">${n}</h3>
+                            <p class="text-slate-900 font-black text-sm my-2">${h}</p>
+                            <a href="${l}" target="_blank" class="block w-full bg-slate-900 text-white py-3 rounded-xl text-[10px] font-black uppercase">Beli</a>
                         </div>
-                    </div>
-                `).join('');
+                    </div>`;
+                }).join('');
             } catch (e) {
-                document.getElementById('grid').innerHTML = `<p class="col-span-full text-center text-red-400">Gagal memuat data. Pastikan sudah deploy di Vercel.</p>`;
+                document.getElementById('grid').innerHTML = `<p class="col-span-full text-center text-red-400">Gagal load. Cek Koneksi & Vercel.</p>`;
             }
         }
 
         async function saveProduct() {
             const btn = document.getElementById('btnSave');
             const fileInput = document.getElementById('pFile');
-            if (fileInput.files.length === 0) return alert("Pilih foto dulu!");
+            if (fileInput.files.length === 0) return alert("Pilih foto!");
             
-            btn.innerText = "Processing...";
-            btn.disabled = true;
+            btn.innerText = "Processing..."; btn.disabled = true;
 
             const reader = new FileReader();
             reader.readAsDataURL(fileInput.files[0]);
             reader.onload = async () => {
                 const base64Image = reader.result.split(',')[1];
-
                 const upRes = await fetch('/api/upload', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -163,25 +151,20 @@
                         source: document.getElementById('pSource').value,
                         img: upData.url
                     };
-
                     await fetch('/api/katalog', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(productData)
                     });
-
-                    alert("Berhasil di-publish!");
-                    location.reload();
+                    alert("Published!"); location.reload();
                 } else {
-                    alert("Gagal upload gambar!");
-                    btn.innerText = "Publish ke Katalog";
-                    btn.disabled = false;
+                    alert("Upload Gagal"); btn.innerText = "Publish"; btn.disabled = false;
                 }
             };
         }
 
         async function delDoc(id) {
-            if(confirm('Hapus produk ini?')) {
+            if(confirm('Hapus?')) {
                 await fetch(`/api/katalog?id=${id}`, { method: 'DELETE' });
                 load();
             }
