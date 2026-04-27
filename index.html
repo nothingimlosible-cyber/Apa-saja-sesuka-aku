@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HYPESTORE - Exclusive Catalog</title>
+    <script src="https://tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <style>
+        @import url('https://googleapis.com');
+        * { font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); scroll-behavior: smooth; }
+        body { background-color: #fcfcfc; }
+        .nav-glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .hero-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+        .admin-only { display: none !important; }
+        .is-admin .admin-only { display: block !important; }
+    </style>
+</head>
+<body class="pb-32" onload="load()">
+
+    <nav class="fixed top-0 w-full z-[100] nav-glass px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-black italic tracking-tighter text-slate-900">HYPE<span class="text-indigo-600">STORE.</span></h1>
+            <div class="flex gap-3">
+                <button onclick="toggleInfo()" class="bg-slate-100 text-slate-600 px-4 py-2 rounded-xl text-[10px] font-black uppercase">Info</button>
+                <button onclick="toggleLogin()" class="text-slate-300 p-2"><i class="fas fa-fingerprint text-xl"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="mt-24 px-6">
+        <div class="max-w-7xl mx-auto hero-gradient rounded-[3rem] p-10 md:p-16 relative overflow-hidden shadow-2xl">
+            <div class="relative z-10 md:w-3/5 text-left">
+                <span class="bg-indigo-500/20 text-indigo-300 text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest border border-indigo-500/30 italic">Platform Affiliate Resmi</span>
+                <h2 class="text-4xl md:text-6xl font-black text-white mt-6 leading-none tracking-tighter uppercase italic">Style Baru <br>Setiap Hari.</h2>
+                <div class="mt-10"><a href="#katalog" class="inline-block bg-indigo-600 text-white px-10 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-xl">Eksplorasi Katalog</a></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Login -->
+    <div id="loginBox" class="hidden fixed inset-0 z-[200] bg-slate-900/60 flex items-center justify-center p-6 text-center">
+        <div class="bg-white p-10 rounded-[3rem] shadow-2xl w-full max-w-xs">
+            <input type="password" id="passInput" placeholder="Passkey" class="w-full p-4 bg-slate-50 rounded-2xl mb-4 text-center font-bold outline-none">
+            <button onclick="login()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase text-[10px]">Authorize</button>
+        </div>
+    </section>
+
+    <!-- Admin Panel -->
+    <section id="adminDashboard" class="admin-only px-6 mt-10">
+        <div class="max-w-7xl mx-auto bg-white p-8 md:p-12 rounded-[3.5rem] border-2 border-dashed border-indigo-100 shadow-2xl text-center">
+            <p class="mb-4 font-bold text-indigo-600">Mode Admin Aktif</p>
+            <!-- Form input kamu tetap di sini, arahkan saveProduct ke API Vercel juga -->
+            <button onclick="toggleDeleteMode()" class="bg-red-500 text-white px-6 py-2 rounded-xl">Toggle Hapus</button>
+        </div>
+    </section>
+
+    <section id="katalog" class="px-6 py-16">
+        <div class="max-w-7xl mx-auto">
+            <div id="grid" class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 text-center">
+                <!-- Loading State -->
+                <p class="col-span-full text-slate-400 italic">Memuat katalog...</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function toggleInfo() { document.getElementById('infoModal')?.classList.toggle('hidden'); }
+        function toggleLogin() { document.getElementById('loginBox').classList.toggle('hidden'); }
+        let isDeleteActive = false;
+
+        async function login() {
+            const pass = document.getElementById('passInput').value;
+            const res = await fetch('/api/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: pass })
+            });
+            const result = await res.json();
+            if(result.success) { 
+                document.body.classList.add('is-admin'); 
+                toggleLogin(); 
+            } else { 
+                alert("Salah!"); 
+            }
+        }
+
+        async function load() {
+            const res = await fetch('/api/katalog');
+            const data = await res.json();
+            const grid = document.getElementById('grid');
+            grid.innerHTML = data.reverse().map(p => `
+                <div class="group bg-white rounded-[2.5rem] overflow-hidden border border-slate-50 p-2 shadow-sm relative">
+                    <button onclick="delDoc('${p.id}')" class="del-btn ${isDeleteActive ? '' : 'hidden'} absolute top-4 right-4 bg-red-600 text-white w-8 h-8 rounded-full">×</button>
+                    <img src="${p.img}" class="aspect-[4/5] rounded-[2rem] object-cover">
+                    <div class="p-4">
+                        <h3 class="text-xs font-bold">${p.nama}</h3>
+                        <p class="text-indigo-600 font-black text-sm">${p.harga}</p>
+                        <a href="${p.link}" class="block mt-2 bg-slate-900 text-white py-2 rounded-xl text-[10px] uppercase font-black">Beli</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function delDoc(id) {
+            if(confirm('Hapus?')) {
+                await fetch(`/api/katalog?id=${id}`, { method: 'DELETE' });
+                load();
+            }
+        }
+        
+        function toggleDeleteMode() { 
+            isDeleteActive = !isDeleteActive; 
+            load(); 
+        }
+    </script>
+</body>
+</html>
