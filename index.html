@@ -4,31 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HYPESTORE - Katalog Affiliate</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,700;0,800;1,800&display=swap');
-        
-        * { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            transition: all 0.3s ease; 
-        }
-        body { background-color: #f8fafc; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
+        * { font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.3s ease; }
+        body { background-color: #f8fafc; padding-bottom: 5rem; }
         .hero-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-        
         .admin-only { display: none !important; }
         body.is-admin .admin-only { display: block !important; }
-        
-        .line-clamp-1 {
-            display: -webkit-box;
-            -webkit-line-clamp: 1;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
+        .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
     </style>
 </head>
-<body class="pb-20" onload="load()">
+<body onload="load()">
 
     <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b px-6 py-4">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
@@ -49,178 +37,113 @@
         </div>
     </section>
 
-    <div id="loginBox" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6">
-        <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-xs text-center border">
-            <h3 class="font-black mb-4 text-slate-800">ADMIN ACCESS</h3>
-            <input type="password" id="passInput" placeholder="Passkey" class="w-full p-4 bg-slate-50 rounded-2xl mb-4 text-center font-bold outline-none border focus:border-indigo-500">
-            <button onclick="login()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase text-[11px] hover:bg-indigo-600">Authorize</button>
-            <button onclick="toggleLogin()" class="mt-4 text-slate-400 text-[10px] uppercase font-bold hover:text-red-500">Batal</button>
-        </div>
-    </div>
-
     <section id="adminDashboard" class="admin-only px-4 mt-8">
         <div class="max-w-7xl mx-auto bg-white p-6 rounded-[2.5rem] border-2 border-dashed border-indigo-200 shadow-md">
-            <h4 class="text-xs font-black text-indigo-600 mb-4 uppercase tracking-widest">Tambah Produk Baru</h4>
+            <h4 class="text-xs font-black text-indigo-600 mb-4 uppercase tracking-widest">Tambah Produk</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <input type="text" id="pName" placeholder="Nama Produk" class="p-4 bg-slate-50 rounded-xl outline-none border text-sm">
-                <input type="text" id="pPrice" placeholder="Harga (Contoh: Rp 125.000)" class="p-4 bg-slate-50 rounded-xl outline-none border text-sm font-bold text-indigo-600">
-                <input type="url" id="pLink" placeholder="Link Affiliate Shopee/TikTok" class="p-4 bg-slate-50 rounded-xl outline-none border text-sm">
-                <input type="text" id="pSource" placeholder="SHOPEE / TIKTOK / TOKOPEDIA" class="p-4 bg-slate-50 rounded-xl outline-none border uppercase font-black text-[10px]">
+                <input type="text" id="pName" placeholder="Nama Produk" class="p-4 bg-slate-50 rounded-xl border text-sm">
+                <input type="text" id="pPrice" placeholder="Harga (Contoh: Rp 125.000)" class="p-4 bg-slate-50 rounded-xl border text-sm font-bold text-indigo-600">
+                <input type="url" id="pLink" placeholder="Link Shopee/TikTok" class="p-4 bg-slate-50 rounded-xl border text-sm">
+                <input type="text" id="pSource" placeholder="SHOPEE / TIKTOK" class="p-4 bg-slate-50 rounded-xl border font-black text-[10px]">
                 <div class="md:col-span-2">
-                    <label class="text-[10px] font-bold text-slate-400 ml-2 uppercase">Foto Produk</label>
-                    <input type="file" id="pFile" accept="image/*" class="w-full p-4 bg-slate-50 rounded-xl text-[10px] mt-1 border">
+                    <input type="file" id="pFile" accept="image/*" class="w-full p-4 bg-slate-50 rounded-xl text-[10px] border">
                 </div>
             </div>
             <div class="flex gap-3 mt-6">
-                <button onclick="saveProduct()" id="btnSave" class="flex-grow bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-[11px] shadow-lg shadow-indigo-200">Publish</button>
-                <button onclick="toggleDeleteMode()" id="btnDelete" class="bg-slate-800 text-white px-6 rounded-2xl hover:bg-red-600">
-                    <i class="fas fa-trash"></i>
-                </button>
+                <button onclick="saveProduct()" id="btnSave" class="flex-grow bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-[11px]">Publish</button>
+                <button onclick="toggleDeleteMode()" id="btnDelete" class="bg-slate-800 text-white px-6 rounded-2xl"><i class="fas fa-trash"></i></button>
             </div>
         </div>
     </section>
 
     <section id="katalog" class="px-4 py-12">
         <div class="max-w-7xl mx-auto">
-            <h3 class="text-2xl font-black text-slate-900 uppercase italic mb-8 border-l-4 border-indigo-600 pl-4 tracking-tighter">Catalogue.</h3>
+            <h3 class="text-2xl font-black text-slate-900 uppercase italic mb-8 border-l-4 border-indigo-600 pl-4">Catalogue.</h3>
             <div id="grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                <p class="col-span-full text-center text-slate-400 py-10 italic">Memuat data produk...</p>
+                <p class="col-span-full text-center text-slate-400 py-10 italic">Memuat...</p>
             </div>
         </div>
     </section>
 
+    <div id="loginBox" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6">
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-xs text-center border">
+            <h3 class="font-black mb-4">ADMIN ACCESS</h3>
+            <input type="password" id="passInput" placeholder="Passkey" class="w-full p-4 bg-slate-50 rounded-2xl mb-4 text-center font-bold border outline-none">
+            <button onclick="login()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase text-[11px]">Authorize</button>
+        </div>
+    </div>
+
     <script>
         let isDeleteActive = false;
-
-        function toggleLogin() { 
-            document.getElementById('loginBox').classList.toggle('hidden'); 
-            document.getElementById('passInput').focus();
-        }
-
-        function toggleDeleteMode() { 
-            isDeleteActive = !isDeleteActive; 
-            const btn = document.getElementById('btnDelete');
-            btn.classList.toggle('bg-red-600');
-            btn.classList.toggle('bg-slate-800');
-            load(); 
-        }
+        function toggleLogin() { document.getElementById('loginBox').classList.toggle('hidden'); }
+        function toggleDeleteMode() { isDeleteActive = !isDeleteActive; load(); }
 
         async function login() {
             const pass = document.getElementById('passInput').value;
-            try {
-                const res = await fetch('/api/auth', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password: pass })
-                });
-                const result = await res.json();
-                if(result.success) { 
-                    document.body.classList.add('is-admin'); 
-                    toggleLogin(); 
-                } else { alert("Passkey Salah!"); }
-            } catch (err) { alert("Gagal login"); }
+            const res = await fetch('/api/auth', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({password: pass}) });
+            const result = await res.json();
+            if(result.success) { document.body.classList.add('is-admin'); toggleLogin(); } else { alert("Salah!"); }
         }
 
         async function load() {
             const grid = document.getElementById('grid');
             try {
                 const res = await fetch('/api/katalog');
-                if (!res.ok) throw new Error("Gagal ambil data API");
                 const data = await res.json();
-                
-                if (!data || data.length === 0) {
-                    grid.innerHTML = `<p class="col-span-full text-center text-slate-400 py-10 italic">Belum ada produk.</p>`;
-                    return;
-                }
+                if (!data || data.length === 0) { grid.innerHTML = `<p class="col-span-full text-center text-slate-400 py-10 italic">Belum ada produk.</p>`; return; }
 
                 grid.innerHTML = data.reverse().map(p => {
-                    // AMBIL DATA BERDASARKAN KEY (HURUF KECIL SEMUA)
-                    const n = p.nama || 'Produk';
-                    const h = p.harga || 'Cek Harga';
-                    const l = p.link || '#';
-                    const s = p.source || 'Affiliate';
-                    const i = p.img || '';
-
+                    const i = p.img || 'https://via.placeholder.com/400x500';
                     return `
                     <div class="bg-white rounded-[2rem] overflow-hidden border border-slate-100 p-2 shadow-sm relative group hover:shadow-xl hover:-translate-y-1">
-                        ${isDeleteActive ? `<button onclick="delDoc('${p.id}')" class="absolute top-4 right-4 bg-red-600 text-white w-8 h-8 rounded-full z-20 shadow-lg hover:scale-110"><i class="fas fa-times"></i></button>` : ''}
+                        ${isDeleteActive ? `<button onclick="delDoc('${p.id}')" class="absolute top-4 right-4 bg-red-600 text-white w-8 h-8 rounded-full z-20"><i class="fas fa-times"></i></button>` : ''}
                         <div class="overflow-hidden rounded-[1.6rem] aspect-[4/5] bg-slate-100">
-                            <img src="${i}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://via.placeholder.com/400x500?text=Gambar+Error'">
+                            <img src="${i}" class="w-full h-full object-cover">
                         </div>
                         <div class="p-3 text-center">
-                            <span class="text-[8px] font-black uppercase text-indigo-500 tracking-widest">${s}</span>
-                            <h3 class="text-[13px] font-bold text-slate-800 line-clamp-1 mt-1">${n}</h3>
-                            <p class="text-slate-900 font-black text-sm my-2">${h}</p>
-                            <a href="${l}" target="_blank" class="block w-full bg-slate-900 text-white py-3 rounded-xl text-[10px] font-black uppercase hover:bg-indigo-600">Beli Sekarang</a>
+                            <span class="text-[8px] font-black uppercase text-indigo-500">${p.source || 'HYPE'}</span>
+                            <h3 class="text-[13px] font-bold text-slate-800 line-clamp-1 mt-1">${p.nama || 'Produk'}</h3>
+                            <p class="text-slate-900 font-black text-sm my-2">${p.harga || 'Cek Harga'}</p>
+                            <a href="${p.link || '#'}" target="_blank" class="block w-full bg-slate-900 text-white py-3 rounded-xl text-[10px] font-black uppercase hover:bg-indigo-600">Beli Sekarang</a>
                         </div>
                     </div>`;
                 }).join('');
-            } catch (e) {
-                grid.innerHTML = `<p class="col-span-full text-center text-red-400 py-10 italic">Sinkronisasi data sedang berjalan. Coba refresh halaman.</p>`;
-            }
+            } catch (e) { grid.innerHTML = `<p class="col-span-full text-center text-red-400">Gagal load data.</p>`; }
         }
 
         async function saveProduct() {
             const btn = document.getElementById('btnSave');
-            const fileInput = document.getElementById('pFile');
-            const pName = document.getElementById('pName').value;
-            const pPrice = document.getElementById('pPrice').value;
-            const pLink = document.getElementById('pLink').value;
-            const pSource = document.getElementById('pSource').value;
-
-            if (!pName || !pPrice || fileInput.files.length === 0) {
-                return alert("Lengkapi Nama, Harga, dan Foto!");
-            }
-            
-            btn.innerText = "Processing..."; 
-            btn.disabled = true;
+            const file = document.getElementById('pFile').files[0];
+            if (!file) return alert("Pilih foto!");
+            btn.innerText = "Processing..."; btn.disabled = true;
 
             const reader = new FileReader();
-            reader.readAsDataURL(fileInput.files[0]);
+            reader.readAsDataURL(file);
             reader.onload = async () => {
-                try {
-                    const base64Image = reader.result.split(',')[1];
-                    const upRes = await fetch('/api/upload', {
+                const base64 = reader.result.split(',')[1];
+                const upRes = await fetch('/api/upload', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({image: base64}) });
+                const upData = await upRes.json();
+
+                if (upData.url) {
+                    await fetch('/api/katalog', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ image: base64Image })
-                    });
-                    const upData = await upRes.json();
-
-                    if (upData.url) {
-                        const productData = {
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
                             id: Date.now().toString(),
-                            nama: pName,
-                            harga: pPrice,
-                            link: pLink,
-                            source: pSource,
+                            nama: document.getElementById('pName').value,
+                            harga: document.getElementById('pPrice').value,
+                            link: document.getElementById('pLink').value,
+                            source: document.getElementById('pSource').value,
                             img: upData.url
-                        };
-                        
-                        await fetch('/api/katalog', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(productData)
-                        });
-
-                        alert("Berhasil!");
-                        location.reload();
-                    }
-                } catch (err) {
-                    alert("Gagal memproses data.");
-                    btn.innerText = "Publish";
-                    btn.disabled = false;
+                        })
+                    });
+                    location.reload();
                 }
             };
         }
 
         async function delDoc(id) {
-            if(confirm('Hapus produk ini?')) {
-                try {
-                    await fetch(`/api/katalog?id=${id}`, { method: 'DELETE' });
-                    load();
-                } catch (err) { alert("Gagal hapus"); }
-            }
+            if(confirm('Hapus?')) { await fetch(`/api/katalog?id=${id}`, { method: 'DELETE' }); load(); }
         }
     </script>
 </body>
