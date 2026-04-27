@@ -78,6 +78,7 @@
         let isDeleteActive = false;
 
         function toggleLogin() { document.getElementById('loginBox').classList.toggle('hidden'); }
+        
         function toggleDeleteMode() { 
             isDeleteActive = !isDeleteActive; 
             document.getElementById('btnDelete').classList.toggle('bg-red-600');
@@ -107,12 +108,11 @@
                 const data = await res.json();
                 
                 if (!data || data.length === 0) {
-                    grid.innerHTML = `<p class="col-span-full text-center text-slate-400 py-10 italic">Belum ada produk yang diunggah.</p>`;
+                    grid.innerHTML = `<p class="col-span-full text-center text-slate-400 py-10 italic">Belum ada produk.</p>`;
                     return;
                 }
 
                 grid.innerHTML = data.reverse().map(p => {
-                    // Proteksi data agar tidak tertukar (menggunakan nama kolom di Google Sheets)
                     const i = p.img || 'https://via.placeholder.com/400x500?text=No+Image';
                     const n = p.nama || 'Produk';
                     const h = p.harga || 'Cek Harga';
@@ -123,7 +123,7 @@
                     <div class="bg-white rounded-[2rem] overflow-hidden border border-slate-100 p-2 shadow-sm relative group hover:shadow-xl hover:-translate-y-1">
                         ${isDeleteActive ? `<button onclick="delDoc('${p.id}')" class="absolute top-4 right-4 bg-red-600 text-white w-8 h-8 rounded-full z-20 shadow-lg"><i class="fas fa-times"></i></button>` : ''}
                         <div class="overflow-hidden rounded-[1.6rem] aspect-[4/5] bg-slate-100">
-                            <img src="${i}" class="w-full h-full object-cover group-hover:scale-110 duration-500" onerror="this.src='https://via.placeholder.com/400x500?text=Image+Error'">
+                            <img src="${i}" class="w-full h-full object-cover group-hover:scale-110 duration-500" onerror="this.src='https://via.placeholder.com/400x500?text=Error'">
                         </div>
                         <div class="p-3 text-center">
                             <span class="text-[8px] font-black uppercase text-indigo-500 tracking-widest">${s}</span>
@@ -134,7 +134,7 @@
                     </div>`;
                 }).join('');
             } catch (e) {
-                grid.innerHTML = `<p class="col-span-full text-center text-red-400 py-10">Sinkronisasi database sedang berjalan. Silakan muat ulang halaman.</p>`;
+                grid.innerHTML = `<p class="col-span-full text-center text-red-400 py-10">Gagal memuat katalog.</p>`;
             }
         }
 
@@ -143,6 +143,8 @@
             const file = document.getElementById('pFile').files[0];
             const pName = document.getElementById('pName').value;
             const pPrice = document.getElementById('pPrice').value;
+            const pLink = document.getElementById('pLink').value || "#";
+            const pSource = document.getElementById('pSource').value || "SHOPEE";
 
             if (!file || !pName || !pPrice) return alert("Lengkapi Nama, Harga, dan Foto!");
             
@@ -153,38 +155,40 @@
             reader.readAsDataURL(file);
             reader.onload = async () => {
                 try {
-                    const base64 = reader.result.split(',')[1];
+                    const base64 = reader.result;
                     
-                    // 1. Upload Gambar
+                    // 1. Upload ke ImgBB via Vercel API
                     const upRes = await fetch('/api/upload', { 
                         method: 'POST', 
                         headers: {'Content-Type': 'application/json'}, 
-                        body: JSON.stringify({image: base64}) 
+                        body: JSON.stringify({ image: base64 }) 
                     });
                     const upData = await upRes.json();
 
-                    if (upData.url) {
-                        // 2. Simpan Data ke Sheets
+                    if (upData.success && upData.url) {
+                        // 2. Simpan Data Lengkap ke Google Sheets
                         const response = await fetch('/api/katalog', {
                             method: 'POST',
                             headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify({
                                 id: Date.now().toString(),
                                 nama: pName,
+                                link: pLink,
                                 harga: pPrice,
-                                link: document.getElementById('pLink').value,
-                                source: document.getElementById('pSource').value,
+                                source: pSource.toUpperCase(),
                                 img: upData.url
                             })
                         });
 
                         if(response.ok) {
-                            alert("Produk Berhasil Terbit!");
+                            alert("Berhasil Terbit!");
                             location.reload();
-                        } else { throw new Error("Gagal Simpan"); }
-                    } else { throw new Error("Gagal Upload Gambar"); }
+                        } else { throw new Error("Gagal Simpan ke Database"); }
+                    } else { 
+                        throw new Error(upData.error || "Gagal Upload Gambar"); 
+                    }
                 } catch (err) {
-                    alert("Error: " + err.message);
+                    alert("Masalah: " + err.message);
                     btn.innerText = "Publish Produk";
                     btn.disabled = false;
                 }
@@ -192,7 +196,7 @@
         }
 
         async function delDoc(id) {
-            if(confirm('Hapus produk ini dari katalog?')) {
+            if(confirm('Hapus produk ini?')) {
                 try {
                     await fetch(`/api/katalog?id=${id}`, { method: 'DELETE' });
                     load();
