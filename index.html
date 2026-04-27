@@ -10,10 +10,10 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
         * { font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.3s ease; scroll-behavior: smooth; }
         body { background-color: #f8fafc; padding-bottom: 5rem; }
-       .hero-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-       .admin-only { display: none!important; }
-        body.is-admin.admin-only { display: block!important; }
-       .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        .hero-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+        .admin-only { display: none !important; }
+        body.is-admin .admin-only { display: block !important; }
+        .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
     </style>
 </head>
 <body onload="load()">
@@ -42,7 +42,7 @@
             <h4 class="text-xs font-black text-indigo-600 mb-4 uppercase tracking-widest">Tambah Produk Baru</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input type="text" id="pName" placeholder="Nama Produk" class="p-4 bg-slate-50 rounded-xl border text-sm outline-none">
-                <input type="number" id="pPrice" placeholder="15000" class="p-4 bg-slate-50 rounded-xl border text-sm font-bold text-indigo-600 outline-none">
+                <input type="text" id="pPrice" placeholder="Harga (Ketik Manual Rp nya)" class="p-4 bg-slate-50 rounded-xl border text-sm font-bold text-indigo-600 outline-none">
                 <input type="url" id="pLink" placeholder="Link Affiliate Shopee/TikTok" class="p-4 bg-slate-50 rounded-xl border text-sm outline-none">
                 <input type="text" id="pSource" placeholder="SHOPEE / TIKTOK" class="p-4 bg-slate-50 rounded-xl border font-black text-[10px] outline-none">
                 <div class="md:col-span-2">
@@ -79,7 +79,7 @@
 
         function toggleLogin() { document.getElementById('loginBox').classList.toggle('hidden'); }
         function toggleDeleteMode() { 
-            isDeleteActive =!isDeleteActive; 
+            isDeleteActive = !isDeleteActive; 
             document.getElementById('btnDelete').classList.toggle('bg-red-600');
             load(); 
         }
@@ -112,13 +112,12 @@
                 }
 
                 grid.innerHTML = data.reverse().map(p => {
-                    // UBAH CUMA INI: Format Rp otomatis + titik ribuan
-                    const angkaDoang = p.harga? p.harga.toString().replace(/\D/g, '') : '';
-                    const hargaFinal = angkaDoang? `Rp. ${Number(angkaDoang).toLocaleString('id-ID')}` : 'Cek Harga';
+                    // VERSI PALING AMAN: Langsung ambil apa yang ada di kolom harga Google Sheets
+                    const hargaFinal = p.harga || 'Cek Harga';
 
                     return `
                     <div class="bg-white rounded-[2rem] overflow-hidden border border-slate-100 p-2 shadow-sm relative group hover:shadow-xl hover:-translate-y-1">
-                        ${isDeleteActive? `<button onclick="delDoc('${p.id}')" class="absolute top-4 right-4 bg-red-600 text-white w-8 h-8 rounded-full z-20 shadow-lg"><i class="fas fa-times"></i></button>` : ''}
+                        ${isDeleteActive ? `<button onclick="delDoc('${p.id}')" class="absolute top-4 right-4 bg-red-600 text-white w-8 h-8 rounded-full z-20 shadow-lg"><i class="fas fa-times"></i></button>` : ''}
                         <div class="overflow-hidden rounded-[1.6rem] aspect-[4/5] bg-slate-100">
                             <img src="${p.img}" class="w-full h-full object-cover group-hover:scale-110 duration-500" onerror="this.src='https://via.placeholder.com/400x500?text=Error'">
                         </div>
@@ -143,7 +142,7 @@
             const pLink = document.getElementById('pLink').value;
             const pSource = document.getElementById('pSource').value || "SHOPEE";
 
-            if (!file ||!pName ||!pPrice ||!pLink) return alert("Lengkapi Semua Data & Foto!");
+            if (!file || !pName || !pPrice || !pLink) return alert("Lengkapi Semua Data & Foto!");
             
             btn.innerText = "Processing..."; 
             btn.disabled = true;
