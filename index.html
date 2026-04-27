@@ -10,11 +10,18 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
         * { font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s ease; scroll-behavior: smooth; }
         body { background-color: #f8fafc; padding-bottom: 5rem; }
-      .hero-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-      .admin-only { display: none!important; }
+     .hero-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+     .admin-only { display: none!important; }
         body.is-admin.admin-only { display: block!important; }
-      .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
-      .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+     .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+     .card-hover:hover { box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+      
+      /* ANIMASI MODAL ZOOM */
+      @keyframes modalZoom {
+        from { opacity: 0; transform: scale(0.8); }
+        to { opacity: 1; transform: scale(1); }
+      }
+     .modal-content { animation: modalZoom 0.3s ease-out; }
     </style>
 </head>
 <body onload="load()">
@@ -33,9 +40,9 @@
     <section class="mt-24 px-4">
         <div class="max-w-7xl mx-auto hero-gradient rounded-[2.5rem] p-8 md:p-16 relative overflow-hidden shadow-xl text-center md:text-left">
             <div class="relative z-10">
-                <span class="bg-indigo-500/20 text-indigo-300 text-[10px] font-black px-4 py-1.5 rounded-full uppercase italic border border-indigo-500/30">Official Katalog</span>
+                <span class="bg-indigo-500/20 text-indigo-300 text- font-black px-4 py-1.5 rounded-full uppercase italic border border-indigo-500/30">Official Katalog</span>
                 <h2 class="text-4xl md:text-6xl font-black text-white mt-4 leading-tight uppercase italic">Style Baru <br>Mulai Disini.</h2>
-                <a href="#katalog" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-xl font-black text-[11px] uppercase mt-8 shadow-lg">Eksplorasi</a>
+                <a href="#katalog" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-3 rounded-xl font-black text- uppercase mt-8 shadow-lg">Eksplorasi</a>
             </div>
         </div>
     </section>
@@ -48,13 +55,13 @@
                 <input type="text" id="pName" placeholder="Nama Produk" class="p-4 bg-slate-50 rounded-xl border text-sm outline-none">
                 <input type="number" id="pPrice" placeholder="15000" class="p-4 bg-slate-50 rounded-xl border text-sm font-bold text-indigo-600 outline-none">
                 <input type="url" id="pLink" placeholder="Link Affiliate Shopee/TikTok" class="p-4 bg-slate-50 rounded-xl border text-sm outline-none">
-                <input type="text" id="pSource" placeholder="SHOPEE / TIKTOK" class="p-4 bg-slate-50 rounded-xl border font-black text-[10px] outline-none">
+                <input type="text" id="pSource" placeholder="SHOPEE / TIKTOK" class="p-4 bg-slate-50 rounded-xl border font-black text- outline-none">
                 <div class="md:col-span-2">
-                    <input type="file" id="pFile" accept="image/*" class="w-full p-4 bg-slate-50 rounded-xl text-[10px] border outline-none">
+                    <input type="file" id="pFile" accept="image/*" class="w-full p-4 bg-slate-50 rounded-xl text- border outline-none">
                 </div>
             </div>
             <div class="flex gap-3 mt-6">
-                <button onclick="saveProduct()" id="btnSave" class="flex-grow bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-[11px] hover:bg-indigo-700 disabled:bg-slate-400">Publish Produk</button>
+                <button onclick="saveProduct()" id="btnSave" class="flex-grow bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text- hover:bg-indigo-700 disabled:bg-slate-400">Publish Produk</button>
                 <button onclick="toggleDeleteMode()" id="btnDelete" class="bg-slate-800 text-white px-6 rounded-2xl hover:bg-red-600"><i class="fas fa-trash"></i></button>
             </div>
         </div>
@@ -70,20 +77,20 @@
         </div>
     </section>
 
-    <!-- MODAL DETAIL PRODUK - INI YANG BIKIN GEDE PAS DIKLIK -->
-    <div id="productModal" class="hidden fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onclick="closeModal()">
-        <div class="bg-white rounded-[2rem] max-w-lg w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+    <!-- MODAL DETAIL PRODUK - INI YANG GEDE PAS DIKLIK -->
+    <div id="productModal" class="hidden fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4" onclick="closeModal()">
+        <div class="modal-content bg-white rounded-[2rem] max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
             <div class="relative">
-                <img id="modalImg" src="" class="w-full aspect-[4/5] object-cover rounded-t-[2rem]">
-                <button onclick="closeModal()" class="absolute top-4 right-4 bg-white/90 text-slate-900 w-10 h-10 rounded-full shadow-lg hover:bg-white">
-                    <i class="fas fa-times"></i>
+                <img id="modalImg" src="" class="w-full aspect-square object-cover rounded-t-[2rem]">
+                <button onclick="closeModal()" class="absolute top-4 right-4 bg-white/90 text-slate-900 w-11 h-11 rounded-full shadow-xl hover:bg-white hover:scale-110">
+                    <i class="fas fa-times text-lg"></i>
                 </button>
             </div>
-            <div class="p-6">
-                <span id="modalSource" class="text-[10px] font-black uppercase text-indigo-500 tracking-widest"></span>
-                <h3 id="modalNama" class="text-xl font-bold text-slate-900 mt-2 leading-snug"></h3>
-                <p id="modalHarga" class="text-indigo-600 font-black text-2xl mt-4"></p>
-                <a id="modalLink" href="" target="_blank" rel="noopener noreferrer" class="block w-full bg-slate-900 text-white py-4 rounded-xl text-sm font-black uppercase hover:bg-indigo-600 mt-6 text-center">Beli Sekarang</a>
+            <div class="p-6 md:p-8">
+                <span id="modalSource" class="text-xs font-black uppercase text-indigo-500 tracking-widest"></span>
+                <h3 id="modalNama" class="text-2xl font-bold text-slate-900 mt-3 leading-snug"></h3>
+                <p id="modalHarga" class="text-indigo-600 font-black text-3xl mt-5"></p>
+                <a id="modalLink" href="" target="_blank" rel="noopener noreferrer" class="block w-full bg-slate-900 text-white py-4 rounded-2xl text-base font-black uppercase hover:bg-indigo-600 mt-8 text-center shadow-lg">Beli Sekarang</a>
             </div>
         </div>
     </div>
@@ -93,8 +100,8 @@
         <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-xs text-center border">
             <h3 class="font-black mb-4">ADMIN ACCESS</h3>
             <input type="password" id="passInput" placeholder="Passkey" class="w-full p-4 bg-slate-50 rounded-2xl mb-4 text-center font-bold border outline-none focus:border-indigo-500">
-            <button onclick="login()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase text-[11px]">Authorize</button>
-            <button onclick="toggleLogin()" class="mt-4 text-slate-400 text-[10px] uppercase font-bold">Batal</button>
+            <button onclick="login()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase text-">Authorize</button>
+            <button onclick="toggleLogin()" class="mt-4 text-slate-400 text- uppercase font-bold">Batal</button>
         </div>
     </div>
 
@@ -111,6 +118,7 @@
 
         function closeModal() {
             document.getElementById('productModal').classList.add('hidden');
+            document.body.style.overflow = 'auto'; // Balikin scroll
         }
 
         function openModal(id) {
@@ -126,6 +134,7 @@
             document.getElementById('modalHarga').innerText = hargaFinal;
             document.getElementById('modalLink').href = p.link;
             document.getElementById('productModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Kunci scroll belakang
         }
 
         async function login() {
@@ -162,16 +171,16 @@
                     const hargaFinal = angkaDoang? `Rp. ${Number(angkaDoang).toLocaleString('id-ID')}` : 'Cek Harga';
 
                     return `
-                    <div class="bg-white rounded-[2rem] overflow-hidden border border-slate-100 p-2 shadow-sm relative group card-hover cursor-pointer" onclick="openModal('${p.id}')">
+                    <div class="bg-white rounded- overflow-hidden border border-slate-100 p-2 shadow-sm relative group card-hover cursor-pointer" onclick="openModal('${p.id}')">
                         ${isDeleteActive? `<button onclick="event.stopPropagation(); delDoc('${p.id}')" class="absolute top-4 right-4 bg-red-600 text-white w-8 h-8 rounded-full z-20 shadow-lg"><i class="fas fa-times"></i></button>` : ''}
                         <div class="overflow-hidden rounded-[1.6rem] aspect-[4/5] bg-slate-100">
-                            <img src="${p.img}" class="w-full h-full object-cover group-hover:scale-110 duration-500" onerror="this.src='https://via.placeholder.com/400x500?text=Error'">
+                            <img src="${p.img}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x500?text=Error'">
                         </div>
                         <div class="p-3 text-center">
                             <span class="text-[8px] font-black uppercase text-indigo-500 tracking-widest">${p.source || 'AFFILIATE'}</span>
-                            <h3 class="text-[13px] font-bold text-slate-800 line-clamp-1 mt-1">${p.nama || 'Produk'}</h3>
+                            <h3 class="text- font-bold text-slate-800 line-clamp-1 mt-1">${p.nama || 'Produk'}</h3>
                             <p class="text-indigo-600 font-black text-sm my-2">${hargaFinal}</p>
-                            <a href="${p.link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" class="block w-full bg-slate-900 text-white py-3 rounded-xl text-[10px] font-black uppercase hover:bg-indigo-600">Beli Sekarang</a>
+                            <a href="${p.link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" class="block w-full bg-slate-900 text-white py-3 rounded-xl text- font-black uppercase hover:bg-indigo-600">Beli Sekarang</a>
                         </div>
                     </div>`;
                 }).join('');
