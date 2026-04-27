@@ -1,34 +1,30 @@
 export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method tidak diizinkan' });
-  }
+  if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
 
-  const IMGBB_API_KEY = process.env.IMGBB_API_KEY;
-  const { image } = req.body;
+  const apiKey = process.env.IMGBB_API_KEY;
+  const { image } = req.body; // Ini base64 dari HP kamu
 
-  if (!image) {
-    return res.status(400).json({ error: 'Data gambar kosong' });
-  }
+  if (!image) return res.status(400).json({ error: 'Gambar kosong' });
 
   try {
-    const formData = new URLSearchParams();
-    formData.append('image', image);
+    // Kita kirim pakai URLSearchParams agar lebih ringan & cepat tembus
+    const body = new URLSearchParams();
+    body.append('image', image);
 
-    const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+    const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
       method: 'POST',
-      body: formData,
+      body: body,
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
     });
 
-    const data = await response.json();
+    const result = await response.json();
 
-    if (data.success) {
-      return res.status(200).json({ url: data.data.url });
+    if (result.success) {
+      return res.status(200).json({ url: result.data.url });
     } else {
-      console.error("ImgBB Error:", data);
-      return res.status(500).json({ error: 'ImgBB menolak upload' });
+      return res.status(500).json({ error: 'ImgBB Error: ' + result.error.message });
     }
-  } catch (error) {
-    console.error("Server Error:", error);
-    return res.status(500).json({ error: 'Gagal menghubungi server upload' });
+  } catch (err) {
+    return res.status(500).json({ error: 'Server Error: ' + err.message });
   }
 }
