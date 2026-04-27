@@ -51,7 +51,7 @@
     </section>
 
     <div id="loginBox" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6">
-        <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-xs text-center border">
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-xs text-center border">
             <h3 class="font-black mb-4 text-slate-800">ADMIN ACCESS</h3>
             <input type="password" id="passInput" placeholder="Passkey" class="w-full p-4 bg-slate-50 rounded-2xl mb-4 text-center font-bold outline-none border focus:border-indigo-500">
             <button onclick="login()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase text-[11px] hover:bg-indigo-600">Authorize</button>
@@ -138,6 +138,7 @@
                 }
 
                 grid.innerHTML = data.reverse().map(p => {
+                    // Penyesuaian Urutan Kolom: nama, harga, link, source, img
                     const n = p.nama || 'Produk';
                     const h = p.harga || 'Cek Harga';
                     const l = p.link || '#';
@@ -159,7 +160,7 @@
                     </div>`;
                 }).join('');
             } catch (e) {
-                document.getElementById('grid').innerHTML = `<p class="col-span-full text-center text-red-400">Gagal load data. Pastikan Vercel API & Google Sheets sudah siap.</p>`;
+                document.getElementById('grid').innerHTML = `<p class="col-span-full text-center text-red-400">Gagal load data.</p>`;
             }
         }
 
@@ -192,6 +193,7 @@
 
                     if (upData.url) {
                         btn.innerText = "Saving Data...";
+                        // Data dikirim dengan key yang sesuai Apps Script
                         const productData = {
                             id: Date.now().toString(),
                             nama: pName,
