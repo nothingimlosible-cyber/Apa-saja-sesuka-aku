@@ -7,35 +7,34 @@ export const config = {
 };
 
 export default async function handler(req, res) {
-  // 1. Cek Method
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Hanya bisa pakai POST ya kak' });
   }
 
-  // 2. Ambil API Key (Sesuaikan dengan nama di Vercel: IBB)
+  // AMBIL API KEY (Pastikan di Vercel namanya IBB)
   const apiKey = process.env.IBB;
 
   if (!apiKey) {
-    return res.status(500).json({ error: 'API Key IBB belum disetting di Vercel' });
+    return res.status(500).json({ error: 'API Key (IBB) belum ada di Vercel' });
   }
 
-  // 3. Ambil data gambar dari body
   const { image } = req.body; 
 
   if (!image) {
-    return res.status(400).json({ error: 'Gambar kosong atau tidak terkirim' });
+    return res.status(400).json({ error: 'Gambar tidak terdeteksi' });
   }
 
   try {
-    // 4. Bersihkan Base64
+    // 1. Bersihkan string Base64 dari header "data:image/..."
     const cleanBase64 = image.includes('base64,') 
       ? image.split('base64,')[1] 
       : image;
 
-    // 5. Kirim ke ImgBB
+    // 2. Siapkan data untuk dikirim ke ImgBB
     const formData = new URLSearchParams();
     formData.append('image', cleanBase64);
 
+    // 3. PROSES KIRIM (Pastikan URL menggunakan apiKey yang tadi diambil)
     const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
       method: 'POST',
       body: formData,
@@ -46,18 +45,18 @@ export default async function handler(req, res) {
 
     const result = await response.json();
 
-    // 6. Respon balik ke Web (Frontend)
+    // 4. Cek hasil dari ImgBB
     if (result.success) {
       return res.status(200).json({ 
         success: true, 
         url: result.data.url 
       });
     } else {
-      return res.status(result.status || 400).json({ 
-        error: 'Gagal di ImgBB: ' + (result.error?.message || 'Unknown Error') 
+      return res.status(400).json({ 
+        error: 'Error ImgBB: ' + (result.error?.message || 'Gagal Upload') 
       });
     }
   } catch (err) {
-    return res.status(500).json({ error: 'Masalah Server: ' + err.message });
+    return res.status(500).json({ error: 'Server Crash: ' + err.message });
   }
 }
