@@ -117,30 +117,29 @@
                 if(result.success) { 
                     document.body.classList.add('is-admin'); 
                     toggleLogin(); 
-                } else { 
-                    alert("Passkey Salah!"); 
-                }
+                } else { alert("Passkey Salah!"); }
             } catch (err) { alert("Gagal login"); }
         }
 
         async function load() {
+            const grid = document.getElementById('grid');
             try {
                 const res = await fetch('/api/katalog');
+                if (!res.ok) throw new Error("Gagal ambil data API");
                 const data = await res.json();
-                const grid = document.getElementById('grid');
                 
-                if (data.length === 0) {
+                if (!data || data.length === 0) {
                     grid.innerHTML = `<p class="col-span-full text-center text-slate-400 py-10 italic">Belum ada produk.</p>`;
                     return;
                 }
 
                 grid.innerHTML = data.reverse().map(p => {
-                    // AMBIL DATA BERDASARKAN KEY (HURUF KECIL)
+                    // AMBIL DATA BERDASARKAN KEY (HURUF KECIL SEMUA)
                     const n = p.nama || 'Produk';
                     const h = p.harga || 'Cek Harga';
                     const l = p.link || '#';
-                    const s = p.source || 'HypeStore';
-                    const i = p.img || 'https://via.placeholder.com/400x500?text=No+Image';
+                    const s = p.source || 'Affiliate';
+                    const i = p.img || '';
 
                     return `
                     <div class="bg-white rounded-[2rem] overflow-hidden border border-slate-100 p-2 shadow-sm relative group hover:shadow-xl hover:-translate-y-1">
@@ -157,7 +156,7 @@
                     </div>`;
                 }).join('');
             } catch (e) {
-                document.getElementById('grid').innerHTML = `<p class="col-span-full text-center text-red-400">Gagal load data.</p>`;
+                grid.innerHTML = `<p class="col-span-full text-center text-red-400 py-10 italic">Sinkronisasi data sedang berjalan. Coba refresh halaman.</p>`;
             }
         }
 
@@ -173,7 +172,7 @@
                 return alert("Lengkapi Nama, Harga, dan Foto!");
             }
             
-            btn.innerText = "Uploading..."; 
+            btn.innerText = "Processing..."; 
             btn.disabled = true;
 
             const reader = new FileReader();
@@ -208,7 +207,7 @@
                         location.reload();
                     }
                 } catch (err) {
-                    alert("Gagal: " + err.message);
+                    alert("Gagal memproses data.");
                     btn.innerText = "Publish";
                     btn.disabled = false;
                 }
