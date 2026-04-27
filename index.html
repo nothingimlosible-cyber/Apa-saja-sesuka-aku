@@ -114,10 +114,10 @@
 
                 grid.innerHTML = data.reverse().map(p => {
                     const i = p.img || 'https://via.placeholder.com/400x500?text=No+Image';
-                    const n = p.nama || 'Produk';
+                    const n = p.nama || 'Produk HYPESTORE';
                     const h = p.harga || 'Cek Harga';
                     const l = p.link || '#';
-                    const s = p.source || 'Affiliate';
+                    const s = p.source || 'AFFILIATE';
 
                     return `
                     <div class="bg-white rounded-[2rem] overflow-hidden border border-slate-100 p-2 shadow-sm relative group hover:shadow-xl hover:-translate-y-1">
@@ -128,8 +128,8 @@
                         <div class="p-3 text-center">
                             <span class="text-[8px] font-black uppercase text-indigo-500 tracking-widest">${s}</span>
                             <h3 class="text-[13px] font-bold text-slate-800 line-clamp-1 mt-1">${n}</h3>
-                            <p class="text-slate-900 font-black text-sm my-2">${h}</p>
-                            <a href="${l}" target="_blank" class="block w-full bg-slate-900 text-white py-3 rounded-xl text-[10px] font-black uppercase hover:bg-indigo-600">Beli Sekarang</a>
+                            <p class="text-indigo-600 font-black text-sm my-2">${h}</p>
+                            <a href="${l}" target="_blank" rel="noopener noreferrer" class="block w-full bg-slate-900 text-white py-3 rounded-xl text-[10px] font-black uppercase hover:bg-indigo-600">Beli Sekarang</a>
                         </div>
                     </div>`;
                 }).join('');
@@ -157,7 +157,7 @@
                 try {
                     const base64 = reader.result;
                     
-                    // 1. Upload ke ImgBB via Vercel API
+                    // 1. Upload Gambar
                     const upRes = await fetch('/api/upload', { 
                         method: 'POST', 
                         headers: {'Content-Type': 'application/json'}, 
@@ -166,7 +166,7 @@
                     const upData = await upRes.json();
 
                     if (upData.success && upData.url) {
-                        // 2. Simpan Data Lengkap ke Google Sheets
+                        // 2. Simpan ke Google Sheets
                         const response = await fetch('/api/katalog', {
                             method: 'POST',
                             headers: {'Content-Type': 'application/json'},
@@ -181,11 +181,11 @@
                         });
 
                         if(response.ok) {
-                            alert("Berhasil Terbit!");
+                            alert("Mantap Alan! Produk Berhasil Terbit.");
                             location.reload();
-                        } else { throw new Error("Gagal Simpan ke Database"); }
+                        } else { throw new Error("Gagal menyimpan ke Google Sheets"); }
                     } else { 
-                        throw new Error(upData.error || "Gagal Upload Gambar"); 
+                        throw new Error(upData.error || "Gagal upload gambar"); 
                     }
                 } catch (err) {
                     alert("Masalah: " + err.message);
