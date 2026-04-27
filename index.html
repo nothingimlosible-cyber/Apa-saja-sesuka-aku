@@ -43,7 +43,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input type="text" id="pName" placeholder="Nama Produk" class="p-4 bg-slate-50 rounded-xl border text-sm outline-none">
                 <input type="text" id="pPrice" placeholder="Harga (Contoh: Rp 125.000)" class="p-4 bg-slate-50 rounded-xl border text-sm font-bold text-indigo-600 outline-none">
-                <input type="url" id="pLink" placeholder="Link Shopee/TikTok" class="p-4 bg-slate-50 rounded-xl border text-sm outline-none">
+                <input type="url" id="pLink" placeholder="Link Affiliate Shopee/TikTok" class="p-4 bg-slate-50 rounded-xl border text-sm outline-none">
                 <input type="text" id="pSource" placeholder="SHOPEE / TIKTOK" class="p-4 bg-slate-50 rounded-xl border font-black text-[10px] outline-none">
                 <div class="md:col-span-2">
                     <input type="file" id="pFile" accept="image/*" class="w-full p-4 bg-slate-50 rounded-xl text-[10px] border outline-none">
@@ -78,7 +78,6 @@
         let isDeleteActive = false;
 
         function toggleLogin() { document.getElementById('loginBox').classList.toggle('hidden'); }
-        
         function toggleDeleteMode() { 
             isDeleteActive = !isDeleteActive; 
             document.getElementById('btnDelete').classList.toggle('bg-red-600');
@@ -108,28 +107,33 @@
                 const data = await res.json();
                 
                 if (!data || data.length === 0) {
-                    grid.innerHTML = `<p class="col-span-full text-center text-slate-400 py-10 italic">Belum ada produk yang dipublish.</p>`;
+                    grid.innerHTML = `<p class="col-span-full text-center text-slate-400 py-10 italic">Belum ada produk.</p>`;
                     return;
                 }
 
-                // data.reverse() supaya produk terbaru ada di atas
                 grid.innerHTML = data.reverse().map(p => {
+                    // JURUS MELURUSKAN DATA YANG TERBALIK DI SHEETS:
+                    // Di Sheet Alan: Nama = Link, Link = Harga, Harga = Nama
+                    const linkAsli = p.nama;  
+                    const hargaAsli = p.link; 
+                    const namaAsli = p.harga; 
+
                     return `
                     <div class="bg-white rounded-[2rem] overflow-hidden border border-slate-100 p-2 shadow-sm relative group hover:shadow-xl hover:-translate-y-1">
                         ${isDeleteActive ? `<button onclick="delDoc('${p.id}')" class="absolute top-4 right-4 bg-red-600 text-white w-8 h-8 rounded-full z-20 shadow-lg"><i class="fas fa-times"></i></button>` : ''}
                         <div class="overflow-hidden rounded-[1.6rem] aspect-[4/5] bg-slate-100">
-                            <img src="${p.img}" class="w-full h-full object-cover group-hover:scale-110 duration-500" onerror="this.src='https://via.placeholder.com/400x500?text=Error+Image'">
+                            <img src="${p.img}" class="w-full h-full object-cover group-hover:scale-110 duration-500" onerror="this.src='https://via.placeholder.com/400x500?text=Error'">
                         </div>
                         <div class="p-3 text-center">
                             <span class="text-[8px] font-black uppercase text-indigo-500 tracking-widest">${p.source || 'AFFILIATE'}</span>
-                            <h3 class="text-[13px] font-bold text-slate-800 line-clamp-1 mt-1">${p.nama}</h3>
-                            <p class="text-indigo-600 font-black text-sm my-2">${p.harga}</p>
-                            <a href="${p.link}" target="_blank" rel="noopener noreferrer" class="block w-full bg-slate-900 text-white py-3 rounded-xl text-[10px] font-black uppercase hover:bg-indigo-600">Beli Sekarang</a>
+                            <h3 class="text-[13px] font-bold text-slate-800 line-clamp-1 mt-1">${namaAsli || 'Produk'}</h3>
+                            <p class="text-indigo-600 font-black text-sm my-2">${hargaAsli || 'Cek Harga'}</p>
+                            <a href="${linkAsli}" target="_blank" rel="noopener noreferrer" class="block w-full bg-slate-900 text-white py-3 rounded-xl text-[10px] font-black uppercase hover:bg-indigo-600">Beli Sekarang</a>
                         </div>
                     </div>`;
                 }).join('');
             } catch (e) {
-                grid.innerHTML = `<p class="col-span-full text-center text-red-400 py-10">Gagal memuat katalog. Pastikan SHEET_API benar.</p>`;
+                grid.innerHTML = `<p class="col-span-full text-center text-red-400 py-10">Gagal memuat katalog.</p>`;
             }
         }
 
@@ -141,7 +145,7 @@
             const pLink = document.getElementById('pLink').value;
             const pSource = document.getElementById('pSource').value || "SHOPEE";
 
-            if (!file || !pName || !pPrice || !pLink) return alert("Lengkapi Nama, Harga, Link, dan Foto!");
+            if (!file || !pName || !pPrice || !pLink) return alert("Lengkapi Semua Data & Foto!");
             
             btn.innerText = "Processing..."; 
             btn.disabled = true;
@@ -151,8 +155,6 @@
             reader.onload = async () => {
                 try {
                     const base64 = reader.result;
-                    
-                    // 1. Upload ke ImgBB via Vercel
                     const upRes = await fetch('/api/upload', { 
                         method: 'POST', 
                         headers: {'Content-Type': 'application/json'}, 
@@ -161,28 +163,27 @@
                     const upData = await upRes.json();
 
                     if (upData.success && upData.url) {
-                        // 2. Kirim ke Katalog (Google Sheets)
-                        // URUTAN DATA: id, nama, link, harga, source, img
+                        // MENGIRIM DENGAN URUTAN YANG DISESUAIKAN DENGAN SHEETS ALAN SEKARANG
                         const response = await fetch('/api/katalog', {
                             method: 'POST',
                             headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify({
                                 id: Date.now().toString(),
-                                nama: pName,
-                                link: pLink,
-                                harga: pPrice,
+                                link: pLink,   // Kolom B
+                                harga: pPrice, // Kolom C
+                                nama: pName,   // Kolom D
                                 source: pSource.toUpperCase(),
                                 img: upData.url
                             })
                         });
 
                         if(response.ok) {
-                            alert("Produk Berhasil Terbit!");
+                            alert("Berhasil!");
                             location.reload();
-                        } else { throw new Error("Gagal simpan ke database."); }
-                    } else { throw new Error(upData.error || "Gagal upload gambar."); }
+                        } else { throw new Error("Gagal simpan database"); }
+                    } else { throw new Error("Gagal upload gambar"); }
                 } catch (err) {
-                    alert("Gagal: " + err.message);
+                    alert("Error: " + err.message);
                     btn.innerText = "Publish Produk";
                     btn.disabled = false;
                 }
