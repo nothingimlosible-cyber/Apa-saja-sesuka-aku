@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HYPESTORE - Katalog Affiliate</title>
+    <title>STORE HYPE AFFILIATE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -12,7 +12,7 @@
         body { background-color: #f8fafc; padding-bottom: 5rem; }
         .hero-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
         
-        /* CSS UNTUK ADMIN - PASTIKAN BAGIAN INI ADA */
+        /* KUNCI PANEL ADMIN */
         .admin-only { display: none !important; }
         body.is-admin .admin-only { display: block !important; }
         
@@ -45,7 +45,7 @@
             <h4 class="text-xs font-black text-indigo-600 mb-4 uppercase tracking-widest">Tambah Produk Baru</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input type="text" id="pName" placeholder="Nama Produk" class="p-4 bg-slate-50 rounded-xl border text-sm outline-none">
-                <input type="text" id="pPrice" placeholder="Harga (Contoh: Rp 125.000)" class="p-4 bg-slate-50 rounded-xl border text-sm font-bold text-indigo-600 outline-none">
+                <input type="text" id="pPrice" placeholder="Harga (Contoh: Rp 150.000)" class="p-4 bg-slate-50 rounded-xl border text-sm font-bold text-indigo-600 outline-none">
                 <input type="url" id="pLink" placeholder="Link Affiliate Shopee/TikTok" class="p-4 bg-slate-50 rounded-xl border text-sm outline-none">
                 <input type="text" id="pSource" placeholder="SHOPEE / TIKTOK" class="p-4 bg-slate-50 rounded-xl border font-black text-[10px] outline-none">
                 <div class="md:col-span-2">
@@ -61,16 +61,18 @@
 
     <section id="katalog" class="px-4 py-12">
         <div class="max-w-7xl mx-auto">
-            <h3 class="text-2xl font-black text-slate-900 uppercase italic mb-8 border-l-4 border-indigo-600 pl-4">Catalogue.</h3>
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-2xl font-black text-slate-900 uppercase italic border-l-4 border-indigo-600 pl-4">Catalogue.</h3>
+            </div>
             <div id="grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                <p class="col-span-full text-center text-slate-400 py-10 italic">Memuat koleksi produk...</p>
+                <p class="col-span-full text-center text-slate-400 py-10 italic">Memuat produk...</p>
             </div>
         </div>
     </section>
 
     <div id="loginBox" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6">
         <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-xs text-center border">
-            <h3 class="font-black mb-4">ADMIN ACCESS</h3>
+            <h3 class="font-black mb-4 uppercase text-sm tracking-widest">Admin Access</h3>
             <input type="password" id="passInput" placeholder="Passkey" class="w-full p-4 bg-slate-50 rounded-2xl mb-4 text-center font-bold border outline-none focus:border-indigo-500">
             <button onclick="login()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase text-[11px]">Authorize</button>
             <button onclick="toggleLogin()" class="mt-4 text-slate-400 text-[10px] uppercase font-bold">Batal</button>
@@ -80,12 +82,9 @@
     <script>
         let isDeleteActive = false;
 
-        function toggleLogin() { document.getElementById('loginBox').classList.toggle('hidden'); }
-        
-        function toggleDeleteMode() { 
-            isDeleteActive = !isDeleteActive; 
-            document.getElementById('btnDelete').classList.toggle('bg-red-600');
-            load(); 
+        function toggleLogin() { 
+            document.getElementById('loginBox').classList.toggle('hidden');
+            document.getElementById('passInput').value = ""; // Reset input saat buka/tutup
         }
 
         async function login() {
@@ -99,14 +98,17 @@
                 const result = await res.json();
                 
                 if(result.success) { 
+                    // 1. Tambahkan class ke body biar dashboard muncul
                     document.body.classList.add('is-admin'); 
+                    // 2. Tutup box login
                     toggleLogin(); 
-                    console.log("Admin Mode Active");
+                    // 3. Info sukses
+                    console.log("Welcome Admin!");
                 } else { 
                     alert("Passkey Salah!"); 
                 }
             } catch (err) { 
-                alert("Gagal koneksi ke server login."); 
+                alert("Gagal koneksi ke API Login"); 
             }
         }
 
@@ -122,7 +124,6 @@
                 }
 
                 grid.innerHTML = data.reverse().map(p => {
-                    const hargaFinal = p.harga || 'Cek Harga';
                     return `
                     <div class="bg-white rounded-[2rem] overflow-hidden border border-slate-100 p-2 shadow-sm relative group hover:shadow-xl hover:-translate-y-1">
                         ${isDeleteActive ? `<button onclick="delDoc('${p.id}')" class="absolute top-4 right-4 bg-red-600 text-white w-8 h-8 rounded-full z-20 shadow-lg"><i class="fas fa-times"></i></button>` : ''}
@@ -132,7 +133,7 @@
                         <div class="p-3 text-center">
                             <span class="text-[8px] font-black uppercase text-indigo-500 tracking-widest">${p.source || 'AFFILIATE'}</span>
                             <h3 class="text-[13px] font-bold text-slate-800 line-clamp-1 mt-1">${p.nama || 'Produk'}</h3>
-                            <p class="text-indigo-600 font-black text-sm my-2">${hargaFinal}</p>
+                            <p class="text-indigo-600 font-black text-sm my-2">${p.harga || 'Cek Harga'}</p>
                             <a href="${p.link}" target="_blank" rel="noopener noreferrer" class="block w-full bg-slate-900 text-white py-3 rounded-xl text-[10px] font-black uppercase hover:bg-indigo-600">Beli Sekarang</a>
                         </div>
                     </div>`;
@@ -160,7 +161,6 @@
             reader.onload = async () => {
                 try {
                     const base64 = reader.result;
-                    
                     const upRes = await fetch('/api/upload', { 
                         method: 'POST', 
                         headers: {'Content-Type': 'application/json'}, 
@@ -168,8 +168,8 @@
                     });
                     const upData = await upRes.json();
 
-                    if (upData.success && upData.url) {
-                        const response = await fetch('/api/katalog', {
+                    if (upData.success) {
+                        await fetch('/api/katalog', {
                             method: 'POST',
                             headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify({
@@ -181,18 +181,21 @@
                                 img: upData.url
                             })
                         });
-
-                        if(response.ok) {
-                            alert("Berhasil Tambah Produk!");
-                            location.reload();
-                        } else { throw new Error("Gagal simpan database"); }
-                    } else { throw new Error(upData.error || "Gagal upload gambar"); }
+                        alert("Berhasil!");
+                        location.reload();
+                    }
                 } catch (err) {
-                    alert("Error: " + err.message);
+                    alert("Gagal: " + err.message);
                     btn.innerText = "Publish Produk";
                     btn.disabled = false;
                 }
             };
+        }
+
+        function toggleDeleteMode() { 
+            isDeleteActive = !isDeleteActive; 
+            document.getElementById('btnDelete').classList.toggle('bg-red-600');
+            load(); 
         }
 
         async function delDoc(id) {
