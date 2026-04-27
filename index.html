@@ -7,17 +7,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
-        * { font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.3s ease; scroll-behavior: smooth; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+        * { font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s ease; scroll-behavior: smooth; }
         body { background-color: #f8fafc; padding-bottom: 5rem; }
-       .hero-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-       .admin-only { display: none!important; }
+      .hero-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+      .admin-only { display: none!important; }
         body.is-admin.admin-only { display: block!important; }
-       .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+      .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+      .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body onload="load()">
 
+    <!-- NAVBAR -->
     <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b px-6 py-4">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <h1 class="text-xl font-black italic text-slate-900">HYPE<span class="text-indigo-600">STORE.</span></h1>
@@ -27,6 +29,7 @@
         </div>
     </nav>
 
+    <!-- HERO -->
     <section class="mt-24 px-4">
         <div class="max-w-7xl mx-auto hero-gradient rounded-[2.5rem] p-8 md:p-16 relative overflow-hidden shadow-xl text-center md:text-left">
             <div class="relative z-10">
@@ -37,6 +40,7 @@
         </div>
     </section>
 
+    <!-- ADMIN -->
     <section id="adminDashboard" class="admin-only px-4 mt-8">
         <div class="max-w-7xl mx-auto bg-white p-6 rounded-[2.5rem] border-2 border-dashed border-indigo-200 shadow-md">
             <h4 class="text-xs font-black text-indigo-600 mb-4 uppercase tracking-widest">Tambah Produk Baru</h4>
@@ -48,6 +52,7 @@
                 <div class="md:col-span-2">
                     <input type="file" id="pFile" accept="image/*" class="w-full p-4 bg-slate-50 rounded-xl text-[10px] border outline-none">
                 </div>
+            </div>
             <div class="flex gap-3 mt-6">
                 <button onclick="saveProduct()" id="btnSave" class="flex-grow bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase text-[11px] hover:bg-indigo-700 disabled:bg-slate-400">Publish Produk</button>
                 <button onclick="toggleDeleteMode()" id="btnDelete" class="bg-slate-800 text-white px-6 rounded-2xl hover:bg-red-600"><i class="fas fa-trash"></i></button>
@@ -55,6 +60,7 @@
         </div>
     </section>
 
+    <!-- KATALOG -->
     <section id="katalog" class="px-4 py-12">
         <div class="max-w-7xl mx-auto">
             <h3 class="text-2xl font-black text-slate-900 uppercase italic mb-8 border-l-4 border-indigo-600 pl-4">Catalogue.</h3>
@@ -64,6 +70,25 @@
         </div>
     </section>
 
+    <!-- MODAL DETAIL PRODUK - INI YANG BIKIN GEDE PAS DIKLIK -->
+    <div id="productModal" class="hidden fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onclick="closeModal()">
+        <div class="bg-white rounded-[2rem] max-w-lg w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+            <div class="relative">
+                <img id="modalImg" src="" class="w-full aspect-[4/5] object-cover rounded-t-[2rem]">
+                <button onclick="closeModal()" class="absolute top-4 right-4 bg-white/90 text-slate-900 w-10 h-10 rounded-full shadow-lg hover:bg-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <span id="modalSource" class="text-[10px] font-black uppercase text-indigo-500 tracking-widest"></span>
+                <h3 id="modalNama" class="text-xl font-bold text-slate-900 mt-2 leading-snug"></h3>
+                <p id="modalHarga" class="text-indigo-600 font-black text-2xl mt-4"></p>
+                <a id="modalLink" href="" target="_blank" rel="noopener noreferrer" class="block w-full bg-slate-900 text-white py-4 rounded-xl text-sm font-black uppercase hover:bg-indigo-600 mt-6 text-center">Beli Sekarang</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN -->
     <div id="loginBox" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6">
         <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-xs text-center border">
             <h3 class="font-black mb-4">ADMIN ACCESS</h3>
@@ -75,26 +100,46 @@
 
     <script>
         let isDeleteActive = false;
+        let allProducts = [];
 
         function toggleLogin() { document.getElementById('loginBox').classList.toggle('hidden'); }
-        function toggleDeleteMode() {
-            isDeleteActive =!isDeleteActive;
+        function toggleDeleteMode() { 
+            isDeleteActive =!isDeleteActive; 
             document.getElementById('btnDelete').classList.toggle('bg-red-600');
-            load();
+            load(); 
+        }
+
+        function closeModal() {
+            document.getElementById('productModal').classList.add('hidden');
+        }
+
+        function openModal(id) {
+            const p = allProducts.find(prod => prod.id === id);
+            if (!p) return;
+            
+            const angkaDoang = p.harga? p.harga.toString().replace(/\D/g, '') : '';
+            const hargaFinal = angkaDoang? `Rp. ${Number(angkaDoang).toLocaleString('id-ID')}` : 'Cek Harga';
+            
+            document.getElementById('modalImg').src = p.img;
+            document.getElementById('modalSource').innerText = p.source || 'AFFILIATE';
+            document.getElementById('modalNama').innerText = p.nama || 'Produk';
+            document.getElementById('modalHarga').innerText = hargaFinal;
+            document.getElementById('modalLink').href = p.link;
+            document.getElementById('productModal').classList.remove('hidden');
         }
 
         async function login() {
             const pass = document.getElementById('passInput').value;
             try {
-                const res = await fetch('/api/auth', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({password: pass})
+                const res = await fetch('/api/auth', { 
+                    method: 'POST', 
+                    headers: {'Content-Type': 'application/json'}, 
+                    body: JSON.stringify({password: pass}) 
                 });
                 const result = await res.json();
-                if(result.success) {
-                    document.body.classList.add('is-admin');
-                    toggleLogin();
+                if(result.success) { 
+                    document.body.classList.add('is-admin'); 
+                    toggleLogin(); 
                 } else { alert("Passkey Salah!"); }
             } catch (err) { alert("Gagal Login"); }
         }
@@ -104,20 +149,21 @@
             try {
                 const res = await fetch('/api/katalog');
                 const data = await res.json();
-
+                
                 if (!data || data.length === 0) {
                     grid.innerHTML = `<p class="col-span-full text-center text-slate-400 py-10 italic">Belum ada produk.</p>`;
                     return;
                 }
 
+                allProducts = data;
+
                 grid.innerHTML = data.reverse().map(p => {
-                    // FORMAT HARGA OTOMATIS: Hapus Rp lama, kasih Rp. baru + titik ribuan
                     const angkaDoang = p.harga? p.harga.toString().replace(/\D/g, '') : '';
                     const hargaFinal = angkaDoang? `Rp. ${Number(angkaDoang).toLocaleString('id-ID')}` : 'Cek Harga';
 
                     return `
-                    <div class="bg-white rounded-[2rem] overflow-hidden border border-slate-100 p-2 shadow-sm relative group hover:shadow-xl hover:-translate-y-1">
-                        ${isDeleteActive? `<button onclick="delDoc('${p.id}')" class="absolute top-4 right-4 bg-red-600 text-white w-8 h-8 rounded-full z-20 shadow-lg"><i class="fas fa-times"></i></button>` : ''}
+                    <div class="bg-white rounded-[2rem] overflow-hidden border border-slate-100 p-2 shadow-sm relative group card-hover cursor-pointer" onclick="openModal('${p.id}')">
+                        ${isDeleteActive? `<button onclick="event.stopPropagation(); delDoc('${p.id}')" class="absolute top-4 right-4 bg-red-600 text-white w-8 h-8 rounded-full z-20 shadow-lg"><i class="fas fa-times"></i></button>` : ''}
                         <div class="overflow-hidden rounded-[1.6rem] aspect-[4/5] bg-slate-100">
                             <img src="${p.img}" class="w-full h-full object-cover group-hover:scale-110 duration-500" onerror="this.src='https://via.placeholder.com/400x500?text=Error'">
                         </div>
@@ -125,7 +171,7 @@
                             <span class="text-[8px] font-black uppercase text-indigo-500 tracking-widest">${p.source || 'AFFILIATE'}</span>
                             <h3 class="text-[13px] font-bold text-slate-800 line-clamp-1 mt-1">${p.nama || 'Produk'}</h3>
                             <p class="text-indigo-600 font-black text-sm my-2">${hargaFinal}</p>
-                            <a href="${p.link}" target="_blank" rel="noopener noreferrer" class="block w-full bg-slate-900 text-white py-3 rounded-xl text-[10px] font-black uppercase hover:bg-indigo-600">Beli Sekarang</a>
+                            <a href="${p.link}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" class="block w-full bg-slate-900 text-white py-3 rounded-xl text-[10px] font-black uppercase hover:bg-indigo-600">Beli Sekarang</a>
                         </div>
                     </div>`;
                 }).join('');
@@ -143,8 +189,8 @@
             const pSource = document.getElementById('pSource').value || "SHOPEE";
 
             if (!file ||!pName ||!pPrice ||!pLink) return alert("Lengkapi Semua Data & Foto!");
-
-            btn.innerText = "Processing...";
+            
+            btn.innerText = "Processing..."; 
             btn.disabled = true;
 
             const reader = new FileReader();
@@ -152,11 +198,11 @@
             reader.onload = async () => {
                 try {
                     const base64 = reader.result;
-
-                    const upRes = await fetch('/api/upload', {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ image: base64 })
+                    
+                    const upRes = await fetch('/api/upload', { 
+                        method: 'POST', 
+                        headers: {'Content-Type': 'application/json'}, 
+                        body: JSON.stringify({ image: base64 }) 
                     });
                     const upData = await upRes.json();
 
