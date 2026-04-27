@@ -12,7 +12,7 @@
         body { background-color: #f8fafc; padding-bottom: 5rem; }
         .hero-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
         
-        /* KUNCI PANEL ADMIN */
+        /* KUNCI UTAMA: Supaya Dashboard Muncul Pas Login */
         .admin-only { display: none !important; }
         body.is-admin .admin-only { display: block !important; }
         
@@ -42,7 +42,7 @@
 
     <section id="adminDashboard" class="admin-only px-4 mt-8">
         <div class="max-w-7xl mx-auto bg-white p-6 rounded-[2.5rem] border-2 border-dashed border-indigo-200 shadow-md">
-            <h4 class="text-xs font-black text-indigo-600 mb-4 uppercase tracking-widest">Tambah Produk Baru</h4>
+            <h4 class="text-xs font-black text-indigo-600 mb-4 uppercase tracking-widest">Dashboard Admin - Tambah Produk</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input type="text" id="pName" placeholder="Nama Produk" class="p-4 bg-slate-50 rounded-xl border text-sm outline-none">
                 <input type="text" id="pPrice" placeholder="Harga (Contoh: Rp 150.000)" class="p-4 bg-slate-50 rounded-xl border text-sm font-bold text-indigo-600 outline-none">
@@ -61,18 +61,16 @@
 
     <section id="katalog" class="px-4 py-12">
         <div class="max-w-7xl mx-auto">
-            <div class="flex justify-between items-center mb-8">
-                <h3 class="text-2xl font-black text-slate-900 uppercase italic border-l-4 border-indigo-600 pl-4">Catalogue.</h3>
-            </div>
+            <h3 class="text-2xl font-black text-slate-900 uppercase italic mb-8 border-l-4 border-indigo-600 pl-4">Catalogue.</h3>
             <div id="grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                <p class="col-span-full text-center text-slate-400 py-10 italic">Memuat produk...</p>
+                <p class="col-span-full text-center text-slate-400 py-10 italic">Memuat katalog...</p>
             </div>
         </div>
     </section>
 
     <div id="loginBox" class="hidden fixed inset-0 z-[100] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6">
         <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-xs text-center border">
-            <h3 class="font-black mb-4 uppercase text-sm tracking-widest">Admin Access</h3>
+            <h3 class="font-black mb-4 uppercase text-xs">Admin Access</h3>
             <input type="password" id="passInput" placeholder="Passkey" class="w-full p-4 bg-slate-50 rounded-2xl mb-4 text-center font-bold border outline-none focus:border-indigo-500">
             <button onclick="login()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase text-[11px]">Authorize</button>
             <button onclick="toggleLogin()" class="mt-4 text-slate-400 text-[10px] uppercase font-bold">Batal</button>
@@ -82,11 +80,8 @@
     <script>
         let isDeleteActive = false;
 
-        function toggleLogin() { 
-            document.getElementById('loginBox').classList.toggle('hidden');
-            document.getElementById('passInput').value = ""; // Reset input saat buka/tutup
-        }
-
+        function toggleLogin() { document.getElementById('loginBox').classList.toggle('hidden'); }
+        
         async function login() {
             const pass = document.getElementById('passInput').value;
             try {
@@ -97,18 +92,16 @@
                 });
                 const result = await res.json();
                 
+                // DISINI KUNCINYA: Harus baca result.success
                 if(result.success) { 
-                    // 1. Tambahkan class ke body biar dashboard muncul
-                    document.body.classList.add('is-admin'); 
-                    // 2. Tutup box login
-                    toggleLogin(); 
-                    // 3. Info sukses
-                    console.log("Welcome Admin!");
+                    document.body.classList.add('is-admin'); // Memunculkan panel admin via CSS
+                    toggleLogin(); // Menutup kotak login
+                    alert("Login Berhasil! Dashboard terbuka.");
                 } else { 
                     alert("Passkey Salah!"); 
                 }
             } catch (err) { 
-                alert("Gagal koneksi ke API Login"); 
+                alert("Error koneksi API Login"); 
             }
         }
 
@@ -117,30 +110,24 @@
             try {
                 const res = await fetch('/api/katalog');
                 const data = await res.json();
-                
                 if (!data || data.length === 0) {
-                    grid.innerHTML = `<p class="col-span-full text-center text-slate-400 py-10 italic">Belum ada produk.</p>`;
+                    grid.innerHTML = `<p class="col-span-full text-center text-slate-400 py-10 italic">Kosong.</p>`;
                     return;
                 }
-
-                grid.innerHTML = data.reverse().map(p => {
-                    return `
-                    <div class="bg-white rounded-[2rem] overflow-hidden border border-slate-100 p-2 shadow-sm relative group hover:shadow-xl hover:-translate-y-1">
+                grid.innerHTML = data.reverse().map(p => `
+                    <div class="bg-white rounded-[2rem] overflow-hidden border border-slate-100 p-2 shadow-sm relative group">
                         ${isDeleteActive ? `<button onclick="delDoc('${p.id}')" class="absolute top-4 right-4 bg-red-600 text-white w-8 h-8 rounded-full z-20 shadow-lg"><i class="fas fa-times"></i></button>` : ''}
                         <div class="overflow-hidden rounded-[1.6rem] aspect-[4/5] bg-slate-100">
-                            <img src="${p.img}" class="w-full h-full object-cover group-hover:scale-110 duration-500" onerror="this.src='https://via.placeholder.com/400x500?text=Error'">
+                            <img src="${p.img}" class="w-full h-full object-cover group-hover:scale-110 duration-500">
                         </div>
                         <div class="p-3 text-center">
-                            <span class="text-[8px] font-black uppercase text-indigo-500 tracking-widest">${p.source || 'AFFILIATE'}</span>
-                            <h3 class="text-[13px] font-bold text-slate-800 line-clamp-1 mt-1">${p.nama || 'Produk'}</h3>
-                            <p class="text-indigo-600 font-black text-sm my-2">${p.harga || 'Cek Harga'}</p>
-                            <a href="${p.link}" target="_blank" rel="noopener noreferrer" class="block w-full bg-slate-900 text-white py-3 rounded-xl text-[10px] font-black uppercase hover:bg-indigo-600">Beli Sekarang</a>
+                            <span class="text-[8px] font-black uppercase text-indigo-500">${p.source || 'AFFILIATE'}</span>
+                            <h3 class="text-[13px] font-bold text-slate-800 line-clamp-1 mt-1">${p.nama}</h3>
+                            <p class="text-indigo-600 font-black text-sm my-2">${p.harga}</p>
+                            <a href="${p.link}" target="_blank" class="block w-full bg-slate-900 text-white py-3 rounded-xl text-[10px] font-black uppercase">Beli Sekarang</a>
                         </div>
-                    </div>`;
-                }).join('');
-            } catch (e) {
-                grid.innerHTML = `<p class="col-span-full text-center text-red-400 py-10">Gagal memuat katalog.</p>`;
-            }
+                    </div>`).join('');
+            } catch (e) { grid.innerHTML = "Gagal memuat."; }
         }
 
         async function saveProduct() {
@@ -151,7 +138,7 @@
             const pLink = document.getElementById('pLink').value;
             const pSource = document.getElementById('pSource').value || "SHOPEE";
 
-            if (!file || !pName || !pPrice || !pLink) return alert("Lengkapi Semua Data & Foto!");
+            if (!file || !pName || !pPrice || !pLink) return alert("Lengkapi data!");
             
             btn.innerText = "Processing..."; 
             btn.disabled = true;
@@ -174,19 +161,16 @@
                             headers: {'Content-Type': 'application/json'},
                             body: JSON.stringify({
                                 id: Date.now().toString(),
-                                nama: pName,
-                                link: pLink,
-                                harga: pPrice,
-                                source: pSource.toUpperCase(),
-                                img: upData.url
+                                nama: pName, link: pLink, harga: pPrice,
+                                source: pSource.toUpperCase(), img: upData.url
                             })
                         });
                         alert("Berhasil!");
                         location.reload();
                     }
                 } catch (err) {
-                    alert("Gagal: " + err.message);
-                    btn.innerText = "Publish Produk";
+                    alert("Error!");
+                    btn.innerText = "Publish";
                     btn.disabled = false;
                 }
             };
@@ -199,11 +183,11 @@
         }
 
         async function delDoc(id) {
-            if(confirm('Hapus produk ini?')) {
+            if(confirm('Hapus?')) {
                 try {
                     await fetch(`/api/katalog?id=${id}`, { method: 'DELETE' });
                     load();
-                } catch (err) { alert("Gagal Menghapus"); }
+                } catch (err) { alert("Gagal"); }
             }
         }
     </script>
