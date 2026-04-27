@@ -1,27 +1,21 @@
 export default async function handler(req, res) {
-  // Pakai try-catch supaya kalau error gak langsung merah lognya
   try {
-    const SHEET_URL = process.env.SHEET_API;
+    const url = process.env.SHEET_API;
+    if (!url) return res.status(500).json({ error: "API URL missing" });
 
-    if (!SHEET_URL) {
-      return res.status(500).json({ error: "SHEET_API belum ada di Environment Variables Vercel!" });
-    }
-
-    // Pakai method GET sebagai default
-    const response = await fetch(SHEET_URL, {
-      method: req.method === 'POST' ? 'POST' : 'GET',
-      headers: req.method === 'POST' ? { 'Content-Type': 'application/json' } : {},
+    const response = await fetch(url, {
+      method: req.method,
+      headers: { 'Content-Type': 'application/json' },
       body: req.method === 'POST' ? JSON.stringify(req.body) : null,
       redirect: 'follow'
     });
 
     const data = await response.json();
+    
+    // Pastikan header CORS agar browser tidak memblokir
+    res.setHeader('Access-Control-Allow-Origin', '*');
     return res.status(200).json(data);
-
   } catch (err) {
-    return res.status(500).json({ 
-      error: "Koneksi Gagal", 
-      detail: err.message 
-    });
+    return res.status(500).json({ error: err.message });
   }
 }
