@@ -42,7 +42,7 @@
             <h4 class="text-xs font-black text-indigo-600 mb-4 uppercase tracking-widest">Tambah Produk Baru</h4>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <input type="text" id="pName" placeholder="Nama Produk" class="p-4 bg-slate-50 rounded-xl border text-sm outline-none">
-                <input type="text" id="pPrice" placeholder="Harga (Contoh: 125000)" class="p-4 bg-slate-50 rounded-xl border text-sm font-bold text-indigo-600 outline-none">
+                <input type="text" id="pPrice" placeholder="Harga (Ketik Manual Rp nya)" class="p-4 bg-slate-50 rounded-xl border text-sm font-bold text-indigo-600 outline-none">
                 <input type="url" id="pLink" placeholder="Link Affiliate Shopee/TikTok" class="p-4 bg-slate-50 rounded-xl border text-sm outline-none">
                 <input type="text" id="pSource" placeholder="SHOPEE / TIKTOK" class="p-4 bg-slate-50 rounded-xl border font-black text-[10px] outline-none">
                 <div class="md:col-span-2">
@@ -112,15 +112,8 @@
                 }
 
                 grid.innerHTML = data.reverse().map(p => {
-                    // Logika format Rp (Membersihkan karakter non-angka lalu memformat)
-                    let hargaTampil = p.harga ? p.harga.toString() : "";
-                    let angkaSaja = hargaTampil.replace(/[^0-9]/g, '');
-                    
-                    const hargaRp = new Intl.NumberFormat('id-ID', {
-                        style: 'currency',
-                        currency: 'IDR',
-                        minimumFractionDigits: 0
-                    }).format(angkaSaja);
+                    // VERSI PALING AMAN: Langsung ambil apa yang ada di kolom harga Google Sheets
+                    const hargaFinal = p.harga || 'Cek Harga';
 
                     return `
                     <div class="bg-white rounded-[2rem] overflow-hidden border border-slate-100 p-2 shadow-sm relative group hover:shadow-xl hover:-translate-y-1">
@@ -131,7 +124,7 @@
                         <div class="p-3 text-center">
                             <span class="text-[8px] font-black uppercase text-indigo-500 tracking-widest">${p.source || 'AFFILIATE'}</span>
                             <h3 class="text-[13px] font-bold text-slate-800 line-clamp-1 mt-1">${p.nama || 'Produk'}</h3>
-                            <p class="text-indigo-600 font-black text-sm my-2">${hargaRp}</p>
+                            <p class="text-indigo-600 font-black text-sm my-2">${hargaFinal}</p>
                             <a href="${p.link}" target="_blank" rel="noopener noreferrer" class="block w-full bg-slate-900 text-white py-3 rounded-xl text-[10px] font-black uppercase hover:bg-indigo-600">Beli Sekarang</a>
                         </div>
                     </div>`;
