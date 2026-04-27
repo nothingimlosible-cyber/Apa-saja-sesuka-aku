@@ -1,0 +1,9 @@
+{
+  "name": "apa-saja-sesuka-aku",
+  "version": "1.0.0",
+  "type": "module",
+  "dependencies": {
+    "formidable": "^3.5.1"
+  }
+}
+
