@@ -10,18 +10,17 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
         * { font-family: 'Plus Jakarta Sans', sans-serif; transition: all 0.2s ease; scroll-behavior: smooth; }
         body { background-color: #f8fafc; padding-bottom: 5rem; }
-     .hero-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-     .admin-only { display: none!important; }
-        body.is-admin.admin-only { display: block!important; }
-     .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
-     .card-hover:hover { box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+    .hero-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+    .admin-only { display: none!important; }
+        body.is-admin.admin-only { display: block!important; } /* INI YANG BENER */
+    .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+    .card-hover:hover { box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
       
-      /* ANIMASI MODAL ZOOM */
       @keyframes modalZoom {
         from { opacity: 0; transform: scale(0.8); }
         to { opacity: 1; transform: scale(1); }
       }
-     .modal-content { animation: modalZoom 0.3s ease-out; }
+    .modal-content { animation: modalZoom 0.3s ease-out; }
     </style>
 </head>
 <body onload="load()">
@@ -77,11 +76,11 @@
         </div>
     </section>
 
-    <!-- MODAL DETAIL PRODUK - INI YANG GEDE PAS DIKLIK -->
+    <!-- MODAL DETAIL PRODUK GEDE -->
     <div id="productModal" class="hidden fixed inset-0 z-[100] bg-black/80 backdrop-blur-md flex items-center justify-center p-4" onclick="closeModal()">
-        <div class="modal-content bg-white rounded-[2rem] max-w-2xl w-full max-h-[90vh] overflow-y-auto" onclick="event.stopPropagation()">
+        <div class="modal-content bg-white rounded- max-w-2xl w-full max-h- overflow-y-auto" onclick="event.stopPropagation()">
             <div class="relative">
-                <img id="modalImg" src="" class="w-full aspect-square object-cover rounded-t-[2rem]">
+                <img id="modalImg" src="" class="w-full aspect-square object-cover rounded-t-">
                 <button onclick="closeModal()" class="absolute top-4 right-4 bg-white/90 text-slate-900 w-11 h-11 rounded-full shadow-xl hover:bg-white hover:scale-110">
                     <i class="fas fa-times text-lg"></i>
                 </button>
@@ -118,7 +117,7 @@
 
         function closeModal() {
             document.getElementById('productModal').classList.add('hidden');
-            document.body.style.overflow = 'auto'; // Balikin scroll
+            document.body.style.overflow = 'auto';
         }
 
         function openModal(id) {
@@ -134,7 +133,7 @@
             document.getElementById('modalHarga').innerText = hargaFinal;
             document.getElementById('modalLink').href = p.link;
             document.getElementById('productModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden'; // Kunci scroll belakang
+            document.body.style.overflow = 'hidden';
         }
 
         async function login() {
