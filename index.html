@@ -112,8 +112,10 @@
                 }
 
                 grid.innerHTML = data.reverse().map(p => {
-                    // Logika format Rp (Otomatis nambah Rp dan titik)
-                    const angkaSaja = p.harga ? p.harga.toString().replace(/[^0-9]/g, '') : '0';
+                    // Logika format Rp (Membersihkan karakter non-angka lalu memformat)
+                    let hargaTampil = p.harga ? p.harga.toString() : "";
+                    let angkaSaja = hargaTampil.replace(/[^0-9]/g, '');
+                    
                     const hargaRp = new Intl.NumberFormat('id-ID', {
                         style: 'currency',
                         currency: 'IDR',
